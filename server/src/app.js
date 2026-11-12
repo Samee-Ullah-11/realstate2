@@ -1,3 +1,4 @@
+import { connectDB } from './config/db.js'
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
@@ -9,6 +10,9 @@ import enquiryRoutes from './routes/enquiries.js'
 import uploadRoutes from './routes/uploads.js'
 import subscriberRoutes from './routes/subscribers.js'
 
+
+
+
 if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is missing. Copy .env.example to .env and fill it in.')
 
 const app = express()
@@ -17,6 +21,15 @@ app.use(helmet())
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
 app.use(express.json({ limit: '100kb' }))
 app.use(cookieParser())
+// Connect to MongoDB before handling API requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB()
+    next()
+  } catch (error) {
+    next(error)
+  }
+})
 
 app.use('/api/auth', authRoutes)
 app.use('/api/properties', propertyRoutes)
