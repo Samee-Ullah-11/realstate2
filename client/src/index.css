@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-charcoal: #1f2227;
+  --color-gold: #c9a24b;
+  --color-gold-light: #d8b668;
+  --color-gold-dark: #8a6a1f; /* dark enough to read as text on white */
+  --color-sand: #f7f4ee;
+  --color-whatsapp: #25d366;
+  /* a stronger ease-out than the browser default, so motion starts fast and feels responsive */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+body {
+  @apply bg-white text-charcoal antialiased;
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium transition-[color,background-color,border-color,transform] duration-150 ease-out motion-safe:active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-dark disabled:opacity-60;
+  }
+  .btn-dark {
+    @apply bg-charcoal text-white hover:bg-black;
+  }
+  .btn-gold {
+    @apply bg-gold text-charcoal hover:bg-gold-light;
+  }
+  .btn-outline {
+    @apply border border-charcoal/20 hover:border-charcoal;
+  }
+  .field {
+    @apply w-full rounded-xl border border-charcoal/15 bg-white px-3.5 py-2.5 text-sm focus:border-gold-dark focus:ring-2 focus:ring-gold/40 focus:outline-none;
+  }
+  .label {
+    @apply mb-1 block text-xs font-medium text-charcoal/70;
+  }
+}
+
+/* Reviews carousel: cards stand on the inside of a slowly turning ring, so the ones near the
+   edges of the screen tilt toward you. Only "transform" is animated, which keeps it smooth. */
+.review-stage {
+  --r: 34rem; /* ring radius */
+  --w: 15rem; /* card width */
+  perspective: 1000px;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .review-stage {
+    --r: 44rem;
+    --w: 17rem;
+  }
+}
+.review-ring {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: translateZ(var(--r));
+  animation: review-spin 90s linear infinite;
+}
+.review-stage:hover .review-ring,
+.review-stage:focus-within .review-ring {
+  animation-play-state: paused; /* stop so a review can be read */
+}
+.review-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--w);
+  height: 12rem;
+  margin: -6rem 0 0 calc(var(--w) / -2);
+  transform: rotateY(var(--angle)) translateZ(calc(var(--r) * -1));
+}
+@keyframes review-spin {
+  to {
+    transform: translateZ(var(--r)) rotateY(-360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .review-ring {
+    animation: none;
+  }
+}
